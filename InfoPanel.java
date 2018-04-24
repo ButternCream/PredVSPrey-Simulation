@@ -50,6 +50,8 @@ public class InfoPanel extends JPanel
             @Override
             public void mouseClicked(MouseEvent e)
             {
+                if (!run.isEnabled())
+                    return;
                 running = true;
                 run.setEnabled(false);
                 stop.setEnabled(true);
@@ -73,6 +75,8 @@ public class InfoPanel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                if (!stop.isEnabled())
+                    return;
                 running = false;
                 run.setEnabled(true);
                 stop.setEnabled(false);
@@ -146,6 +150,7 @@ public class InfoPanel extends JPanel
     public void Disable()
     {
         run.setEnabled(false);
+        stop.setEnabled(false);
         running = false;
     }
     

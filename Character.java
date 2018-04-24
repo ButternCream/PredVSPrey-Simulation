@@ -16,7 +16,6 @@ public class Character {
     protected Color color;
     protected int birthRate; // Every X days it can reproduce
     protected boolean moved = false;
-    private int row, col;
 
     public Character()
     {
@@ -63,24 +62,8 @@ public class Character {
     public boolean canReproduce()
     {
         if (age > 18 || age < 100)
-            return ((age % birthRate == 0) ? true : false);
+            return (age % birthRate == 0);
         return false;
-    }
-
-    public void setCoordinates(int r, int c)
-    {   
-        this.row = r;
-        this.col = c;
-    }
-
-    public int getRow()
-    {
-        return row;
-    }
-
-    public int getCol()
-    {
-        return col;
     }
 
     public int getAge()
