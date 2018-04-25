@@ -38,13 +38,13 @@ public class Main extends JFrame
     private JCheckBoxMenuItem musicItem;
     private JCheckBoxMenuItem circItems;
     private JCheckBoxMenuItem gridLinesItem;
-    private Integer[] goals = new Integer[]{10000, 50000, 100000, 500000, 1000000};
+    private Integer[] goals = new Integer[]{5000, 10000, 25000, 50000, 100000, 250000};
     // New game menu
     private JFrame newGame;
 
     public Main()
     {
-        super("Main");
+        super("Predator vs Prey");
         // Add elements
         panel = new InfoPanel(screenSize);
         g = new Grid(screenSize, panel);
@@ -225,7 +225,7 @@ public class Main extends JFrame
         writer.write(g.gridSize() + "\n");
         writer.write(g.numCycles() + "\n");
         writer.write(g.getGoal() + "\n");
-        for (GameSquare[] sqlist : g.test)
+        for (GameSquare[] sqlist : g.gameGrid)
         {
             for (GameSquare sq : sqlist)
             {
@@ -264,27 +264,27 @@ public class Main extends JFrame
             switch (type)
             {
                 case 0:
-                    g.test[row][col].setOccupied(false);
+                    g.gameGrid[row][col].setOccupied(false);
                     break;
                 case 1:
-                    g.test[row][col].setLocation(new Location(row,col));
-                    g.test[row][col].setCharacter(new Prey());
-                    g.test[row][col].setOccupied(true);
+                    g.gameGrid[row][col].setLocation(new Location(row,col));
+                    g.gameGrid[row][col].setCharacter(new Prey());
+                    g.gameGrid[row][col].setOccupied(true);
                     break;
                 case 2:
-                    g.test[row][col].setLocation(new Location(row,col));
-                    g.test[row][col].setCharacter(new Predator());
-                    g.test[row][col].setOccupied(true);
+                    g.gameGrid[row][col].setLocation(new Location(row,col));
+                    g.gameGrid[row][col].setCharacter(new Predator());
+                    g.gameGrid[row][col].setOccupied(true);
                     break;
                 case 3:
-                    g.test[row][col].setLocation(new Location(row,col));
-                    g.test[row][col].setCharacter(new MutatedPredator());
-                    g.test[row][col].setOccupied(true);
+                    g.gameGrid[row][col].setLocation(new Location(row,col));
+                    g.gameGrid[row][col].setCharacter(new MutatedPredator());
+                    g.gameGrid[row][col].setOccupied(true);
                     break;
                 case 4:
-                    g.test[row][col].setLocation(new Location(row,col));
-                    g.test[row][col].setCharacter(new MutatedPrey());
-                    g.test[row][col].setOccupied(true);
+                    g.gameGrid[row][col].setLocation(new Location(row,col));
+                    g.gameGrid[row][col].setCharacter(new MutatedPrey());
+                    g.gameGrid[row][col].setOccupied(true);
                     
             }
             count++;
@@ -316,7 +316,7 @@ public class Main extends JFrame
         JLabel preyLbl = new JLabel("# Of Prey: ");
         JLabel goalLbl = new JLabel("Win Goal: ");
         JComboBox<Integer> diff = new JComboBox<>(goals);
-        diff.setSelectedIndex(1);
+        diff.setSelectedIndex(0);
 
         create.addActionListener(new ActionListener(){
             @Override
@@ -325,9 +325,9 @@ public class Main extends JFrame
                 g.resize(((Number)size.getValue()).intValue());
                 int numPred = ((Number)predator.getValue()).intValue();
                 int numPrey = ((Number)prey.getValue()).intValue();
+                g.shuffle();
                 g.generatePositions(numPred,numPrey);
                 g.setGoal((Integer)diff.getSelectedItem());
-                g.shuffle();
                 newGame.setVisible(false);
                 panel.Enable();
                 panel.setCycle(0);
@@ -343,6 +343,8 @@ public class Main extends JFrame
                 System.out.println("Canceled creating new game.");
             }
         });
+
+	newGame.setResizable(false);
 
         // Set the layout
         newGame.setLayout(new GridBagLayout());

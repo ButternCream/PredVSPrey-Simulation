@@ -25,7 +25,7 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
     private double cellSize;
     private int screenSize;
     private int offset = 0;
-    public GameSquare[][] test;
+    public GameSquare[][] gameGrid;
     private GameSquare selected = null;
     private int selectedRow, selectedCol;
     private int clickedRow, clickedCol;
@@ -48,13 +48,13 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
     public Grid(int screenSize, InfoPanel d)
     {
         addMouseListener(this);
-        test = new GameSquare[numTiles][numTiles];
+        gameGrid = new GameSquare[numTiles][numTiles];
         for (int i = 0; i < numTiles; i++)
         {
-            test[i] = new GameSquare[numTiles];
+            gameGrid[i] = new GameSquare[numTiles];
             for (int j = 0; j < numTiles; j++)
             {
-                test[i][j] = new GameSquare();
+                gameGrid[i][j] = new GameSquare();
             }
         }
 
@@ -92,13 +92,13 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
     public void resize(int tiles)
     {
         numTiles = tiles;
-        test = new GameSquare[numTiles][numTiles];
+        gameGrid = new GameSquare[numTiles][numTiles];
         for (int i = 0; i < numTiles; i++)
         {
-            test[i] = new GameSquare[numTiles];
+            gameGrid[i] = new GameSquare[numTiles];
             for (int j = 0; j < numTiles; j++)
             {
-                test[i][j] = new GameSquare();
+                gameGrid[i][j] = new GameSquare();
             }
         }
 
@@ -122,11 +122,11 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
             int row = (int)(Math.random()*numTiles);
             int col = (int)(Math.random()*numTiles);
 
-            if (test[row][col].isEmpty())
+            if (gameGrid[row][col].isEmpty())
             {
-                test[row][col].setLocation(new Location(row,col));
-                test[row][col].setCharacter(new Predator());
-                test[row][col].setOccupied(true);
+                gameGrid[row][col].setLocation(new Location(row,col));
+                gameGrid[row][col].setCharacter(new Predator());
+                gameGrid[row][col].setOccupied(true);
                 placed++;
             }
         }
@@ -136,11 +136,11 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
             int row = (int)(Math.random()*numTiles);
             int col = (int)(Math.random()*numTiles);
 
-            if (test[row][col].isEmpty())
+            if (gameGrid[row][col].isEmpty())
             {
-                test[row][col].setLocation(new Location(row,col));
-                test[row][col].setCharacter(new Prey());
-                test[row][col].setOccupied(true);
+                gameGrid[row][col].setLocation(new Location(row,col));
+                gameGrid[row][col].setCharacter(new Prey());
+                gameGrid[row][col].setOccupied(true);
                 placed++;
             }
         }
@@ -153,21 +153,21 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
     {
         if (evt.getActionCommand().equals("Prey"))
         {
-            test[clickedRow][clickedCol].setCharacter(new Prey());
-            test[clickedRow][clickedCol].setLocation(new Location(clickedRow,clickedCol));
-            test[clickedRow][clickedCol].setOccupied(true);
+            gameGrid[clickedRow][clickedCol].setCharacter(new Prey());
+            gameGrid[clickedRow][clickedCol].setLocation(new Location(clickedRow,clickedCol));
+            gameGrid[clickedRow][clickedCol].setOccupied(true);
 
         }
         else if (evt.getActionCommand().equals("Predator"))
         {
-            test[clickedRow][clickedCol].setCharacter(new Predator());
-            test[clickedRow][clickedCol].setLocation(new Location(clickedRow,clickedCol));
-            test[clickedRow][clickedCol].setOccupied(true);
+            gameGrid[clickedRow][clickedCol].setCharacter(new Predator());
+            gameGrid[clickedRow][clickedCol].setLocation(new Location(clickedRow,clickedCol));
+            gameGrid[clickedRow][clickedCol].setOccupied(true);
 
         }
         else if (evt.getActionCommand().equals("Remove"))
         {
-            test[clickedRow][clickedCol].setOccupied(false);
+            gameGrid[clickedRow][clickedCol].setOccupied(false);
         }
         repaint();
     }
@@ -213,7 +213,7 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
     public void tryMutations()
     {
         Random r = new Random();
-        for (GameSquare[] sqlist : test)
+        for (GameSquare[] sqlist : gameGrid)
         {
             for (GameSquare sq : sqlist)
             {
@@ -261,7 +261,7 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
         }
         int cPrey = 0;
         int cPred = 0;
-        for (GameSquare[] sqlist : test)
+        for (GameSquare[] sqlist : gameGrid)
         {
             for (GameSquare sq : sqlist)
             {
@@ -279,7 +279,7 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
     // Reset the characters moves at end of cycle
     public void resetMoves()
     {
-        for (GameSquare[] sqlist : test)
+        for (GameSquare[] sqlist : gameGrid)
             for (GameSquare sq : sqlist)
                 sq.entity.setMoved(false);
     }
@@ -288,7 +288,7 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
     public void reproduce()
     {
         Random r = new Random();
-        for (GameSquare[] sqlist : test)
+        for (GameSquare[] sqlist : gameGrid)
         {
             for (GameSquare sq : sqlist)
             {
@@ -301,24 +301,24 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
                         int index = (int)(Math.random()*vacant.size());
                         Location dest = vacant.get(index);
                         if (type.equals("Prey"))
-                            test[dest.ROW][dest.COLUMN] = new GameSquare(new Prey(), new Location(dest.ROW, dest.COLUMN));
+                            gameGrid[dest.ROW][dest.COLUMN] = new GameSquare(new Prey(), new Location(dest.ROW, dest.COLUMN));
                         else if (type.equals("Predator"))
-                            test[dest.ROW][dest.COLUMN] = new GameSquare(new Predator(), new Location(dest.ROW, dest.COLUMN));
+                            gameGrid[dest.ROW][dest.COLUMN] = new GameSquare(new Predator(), new Location(dest.ROW, dest.COLUMN));
                         else if (type.equals("Mutated Predator"))
                         {
                             double val = r.nextDouble();
                             if (val > 0.7)
-                                test[dest.ROW][dest.COLUMN] = new GameSquare(new MutatedPredator(), new Location(dest.ROW, dest.COLUMN));
+                                gameGrid[dest.ROW][dest.COLUMN] = new GameSquare(new MutatedPredator(), new Location(dest.ROW, dest.COLUMN));
                             else
-                                test[dest.ROW][dest.COLUMN] = new GameSquare(new Predator(), new Location(dest.ROW, dest.COLUMN));
+                                gameGrid[dest.ROW][dest.COLUMN] = new GameSquare(new Predator(), new Location(dest.ROW, dest.COLUMN));
                         }
                         else if (type.equals("Mutated Prey"))
                         {
                             double val = r.nextDouble();
                             if (val > 0.5)
-                                test[dest.ROW][dest.COLUMN] = new GameSquare(new MutatedPrey(), new Location(dest.ROW, dest.COLUMN));
+                                gameGrid[dest.ROW][dest.COLUMN] = new GameSquare(new MutatedPrey(), new Location(dest.ROW, dest.COLUMN));
                             else
-                                test[dest.ROW][dest.COLUMN] = new GameSquare(new Prey(), new Location(dest.ROW, dest.COLUMN));
+                                gameGrid[dest.ROW][dest.COLUMN] = new GameSquare(new Prey(), new Location(dest.ROW, dest.COLUMN));
                         }
                     }
                 }
@@ -329,7 +329,7 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
     // Check if predator is starving. If so, kill them.
     public void checkStarvation()
     {
-        for (GameSquare[] sqlist : test)
+        for (GameSquare[] sqlist : gameGrid)
         {
             for (GameSquare sq : sqlist)
             {
@@ -356,7 +356,7 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
     // Predators move and first check for prey. If there is none just randomly move.
     public void randomPredatorMoves()
     {
-        for (GameSquare[] sqlist : test)
+        for (GameSquare[] sqlist : gameGrid)
         {
             for (GameSquare sq : sqlist)
             {
@@ -420,7 +420,7 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
     // unmutated prey randomly move
     public void randomPreyMoves()
     {
-        for (GameSquare[] sqlist : test)
+        for (GameSquare[] sqlist : gameGrid)
         {
             for (GameSquare sq : sqlist)
             {
@@ -456,12 +456,12 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
         double cellHeight = (double)getHeight() / numTiles;
         for (row = 0; row < numTiles; row++) {
             for (col = 0; col < numTiles; col++) {
-                if (!test[row][col].isEmpty()) {
+                if (!gameGrid[row][col].isEmpty()) {
                     int x1 = (int)(col*cellWidth);
                     int y1 = (int)(row*cellHeight);
                     int x2 = (int)((col+1)*cellWidth);
                     int y2 = (int)((row+1)*cellHeight);
-                    g.setColor(test[row][col].getColor());
+                    g.setColor(gameGrid[row][col].getColor());
                     if (CIRCLES)
                         g.fillOval( x1, y1, (int)cellWidth, (int)cellHeight );
                     else
@@ -487,7 +487,7 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
     /*
      *  Implement the mouse event functions.
      *  Mouse pressed finds where you clicked and fills the selected rectangle in
-     *  the grid with a random color for testing. It also sets the labels
+     *  the grid with a random color for gameGriding. It also sets the labels
      *  in the panel class so we can see the details of the grid entities.. 
      */
     public void mouseClicked(MouseEvent e){}
@@ -500,7 +500,7 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
         int col = (int)(((double)e.getX())/getWidth()*numTiles);
         if (SwingUtilities.isRightMouseButton(e))
         {
-            if (test[row][col].isEmpty())
+            if (gameGrid[row][col].isEmpty())
             {
                 menu.remove(remove);
                 menu.add(add);
@@ -523,12 +523,12 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
         {
             
             // Moving / Selection
-            //if (selected == null && !test[row][col].isEmpty())
+            //if (selected == null && !gameGrid[row][col].isEmpty())
             //{
-                //selected = test[row][col];
+                //selected = gameGrid[row][col];
               //  System.out.println(selected.entity.toString());
             //}
-            //else if (selected == test[row][col])
+            //else if (selected == gameGrid[row][col])
             //{
               //  System.out.println("Same object, unselecting.");
                 //selected = null;
@@ -555,8 +555,8 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
             }*/
 
              // Set the info panel labels
-            if (!test[row][col].isEmpty())
-                panel.displayInfo(test[row][col]);
+            if (!gameGrid[row][col].isEmpty())
+                panel.displayInfo(gameGrid[row][col]);
 
         }
     }
@@ -565,11 +565,11 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
     public void move(GameSquare selected, int row, int col)
     {      
         GameSquare sq = new GameSquare(selected);
-        test[row][col] = sq;
-        test[row][col].setLocation(row,col);
+        gameGrid[row][col] = sq;
+        gameGrid[row][col].setLocation(row,col);
         int oldRow = selected.getLocation().ROW;
         int oldCol = selected.getLocation().COLUMN;
-        test[oldRow][oldCol].setOccupied(false);
+        gameGrid[oldRow][oldCol].setOccupied(false);
         selected.setOccupied(false);
     }
 
@@ -584,7 +584,7 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
             {
                 if (r == 0 && c == 0)
                     continue;
-                if (isValid(row+r, col+c) && test[row+r][col+c].isEmpty())
+                if (isValid(row+r, col+c) && gameGrid[row+r][col+c].isEmpty())
                 {
                     vacant.add(new Location(row+r, col+c));
                 }
@@ -605,7 +605,7 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
             {
                 if (r == 0 && c == 0)
                     continue;
-                if (isValid(row+r, col+c) && (test[row+r][col+c].getType().equals("Prey") || test[row+r][col+c].getType().equals("Mutated Prey")))
+                if (isValid(row+r, col+c) && (gameGrid[row+r][col+c].getType().equals("Prey") || gameGrid[row+r][col+c].getType().equals("Mutated Prey")))
                 {
                     prey.add(new Location(row+r, col+c));
                 }
@@ -630,9 +630,9 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
                 int m = rand.nextInt(i+1);
                 int n = rand.nextInt(j+1);
 
-                GameSquare temp = test[i][j];
-                test[i][j] = test[m][n];
-                test[m][n] = temp;
+                GameSquare temp = gameGrid[i][j];
+                gameGrid[i][j] = gameGrid[m][n];
+                gameGrid[m][n] = temp;
             }
         }
     }
