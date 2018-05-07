@@ -22,6 +22,7 @@ public class InfoPanel extends JPanel
     private JLabel status;
     private JLabel iter;
     private JLabel goalLbl;
+    private JLabel paintInfo;
     private boolean running = false;
     private static int delay;
 
@@ -40,6 +41,7 @@ public class InfoPanel extends JPanel
         status = new JLabel();
         iter = new JLabel("Cycle");
         goalLbl = new JLabel("Goal");
+	paintInfo = new JLabel("Paint Mode");
         run = new JButton("Play");
         run.setPreferredSize(new Dimension(100,35));
         stop = new JButton("Pause");
@@ -131,8 +133,11 @@ public class InfoPanel extends JPanel
         add(goalLbl, c);
         c.gridy = 9;
 
+	add(paintInfo, c);
+	c.gridy = 10;
+
         add(status, c);
-        c.gridy = 10;
+        c.gridy = 11;
 
     }
 
@@ -208,6 +213,16 @@ public class InfoPanel extends JPanel
             setEaten("Eaten: " + Long.toString(square.Eaten()));
         else
             setEaten("");
+    }
+
+    public void setPaintStatus(int mode)
+    {
+	if (mode == 0)
+	    paintInfo.setText("Paint Mode: Disabled");
+	else if (mode == 1)
+	    paintInfo.setText("Paint Mode: Prey");
+	else if (mode == 2)
+	    paintInfo.setText("Paint Mode: Predator");
     }
 
 }

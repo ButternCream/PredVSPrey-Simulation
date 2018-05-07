@@ -48,6 +48,8 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
 	    System.out.println("Paint mode set to predators!");
 	setFocusable(true);
     }  
+
+    public int getPaintMode() { return PAINT_MODE; }
     
     public Grid(int screenSize, InfoPanel d)
     {
@@ -273,6 +275,7 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
                     return 0; // No winner yet
             }
         }
+	if (cPrey == 0 && cPred == 0) { return 2; }
         return -1; // Predators won
     }
 
@@ -498,7 +501,7 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
     {
 	if (PAINT_MODE > 0)
 	    mouseDragged(e);
-        if (SwingUtilities.isLeftMouseButton(e))
+        if (SwingUtilities.isRightMouseButton(e))
         {
             int row = (int)(((double)e.getY())/getHeight()*numTiles);
             int col = (int)(((double)e.getX())/getWidth()*numTiles);
@@ -513,21 +516,27 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
     @Override
     public void mouseDragged(MouseEvent e)
     {
-	if (PAINT_MODE == 0)
+	if (PAINT_MODE == 0 || SwingUtilities.isRightMouseButton(e))
 	    return;
         int row = (int)(((double)e.getY())/getHeight()*numTiles);
         int col = (int)(((double)e.getX())/getWidth()*numTiles);
 	try
 	{
-		if (gameGrid[row][col].isEmpty())
+		for (int r = -1; r <= 1; r++)
 		{
-		    if (PAINT_MODE == 1)
-			gameGrid[row][col].setCharacter(new Prey());
-		    else if (PAINT_MODE == 2)
-			gameGrid[row][col].setCharacter(new Predator());
-		    gameGrid[row][col].setLocation(new Location(row,col));
-		    gameGrid[row][col].setOccupied(true);
-		    repaint();
+		    for (int c = -1; c <= 1; c++)
+		    {
+			if (gameGrid[row+r][col+c].isEmpty())
+			{
+			    if (PAINT_MODE == 1)
+				gameGrid[row+r][col+c].setCharacter(new Prey());
+			    else if (PAINT_MODE == 2)
+				gameGrid[row+r][col+c].setCharacter(new Predator());
+			    gameGrid[row+r][col+c].setLocation(new Location(row+r,col+c));
+			    gameGrid[row+r][col+c].setOccupied(true);
+			    repaint();
+			}
+		    }
 		}
 	} catch(Exception ArrayIndexOutOfBoundsException) {}
     }

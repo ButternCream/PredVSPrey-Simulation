@@ -146,6 +146,7 @@ public class Main extends JFrame
 		    g.setPaintMode(1);
 		else
 		    g.setPaintMode(0);
+		panel.setPaintStatus(g.getPaintMode());
 	    }
 	});
 
@@ -158,6 +159,7 @@ public class Main extends JFrame
 		    g.setPaintMode(2);
 		else
 		    g.setPaintMode(0);
+		panel.setPaintStatus(g.getPaintMode());
 	    }
 	});
 
