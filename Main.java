@@ -38,10 +38,15 @@ public class Main extends JFrame
     private JCheckBoxMenuItem musicItem;
     private JCheckBoxMenuItem circItems;
     private JCheckBoxMenuItem gridLinesItem;
+    private JMenu paintMode;
+    private JCheckBoxMenuItem paintPrey;
+    private JCheckBoxMenuItem paintPredator;
+
     private Integer[] goals = new Integer[]{5000, 10000, 25000, 50000, 100000, 250000};
     // New game menu
     private JFrame newGame;
-
+    
+  
     public Main()
     {
         super("Predator vs Prey");
@@ -50,6 +55,7 @@ public class Main extends JFrame
         g = new Grid(screenSize, panel);
         add(g, BorderLayout.CENTER);
         add(panel, BorderLayout.EAST);
+
 
         // Set properties
         setSize(screenSize+200,screenSize);
@@ -119,10 +125,42 @@ public class Main extends JFrame
         musicItem = new JCheckBoxMenuItem("Music");
         circItems = new JCheckBoxMenuItem("Use Circles");
         gridLinesItem = new JCheckBoxMenuItem("Show Grid Lines");
+    	paintMode = new JMenu("Paint Mode");
+    	paintPrey = new JCheckBoxMenuItem("Prey");
+    	paintPredator = new JCheckBoxMenuItem("Predator");
+
+	paintPrey.setState(false);
+	paintPredator.setState(false);
 
         musicItem.setState(false);
         circItems.setState(false);
         gridLinesItem.setState(true);
+
+
+	paintPrey.addActionListener(new ActionListener(){
+	    @Override
+            public void actionPerformed(ActionEvent evt)
+	    {
+		paintPredator.setState(false);
+		if (paintPrey.getState())
+		    g.setPaintMode(1);
+		else
+		    g.setPaintMode(0);
+	    }
+	});
+
+	paintPredator.addActionListener(new ActionListener(){
+	    @Override
+            public void actionPerformed(ActionEvent evt)
+	    {
+		paintPrey.setState(false);
+		if (paintPredator.getState())
+		    g.setPaintMode(2);
+		else
+		    g.setPaintMode(0);
+	    }
+	});
+
 
         musicItem.addActionListener(new ActionListener(){
             @Override
@@ -153,9 +191,12 @@ public class Main extends JFrame
             }
         });
 
+	paintMode.add(paintPrey);
+	paintMode.add(paintPredator);
         options.add(musicItem);
         options.add(circItems);
         options.add(gridLinesItem);
+	options.add(paintMode);
         menuBar.add(options);
     }
 

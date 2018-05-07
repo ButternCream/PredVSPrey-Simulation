@@ -61,7 +61,7 @@ public class Character {
 
     public boolean canReproduce()
     {
-        if (age > 18 || age < 100)
+        if (birthRate != 0 && (age > 18 || age < 100))
             return (age % birthRate == 0);
         return false;
     }

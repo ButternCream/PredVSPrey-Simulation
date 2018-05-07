@@ -17,11 +17,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 
-public class Grid extends JPanel implements MouseListener, ActionListener {
+public class Grid extends JPanel implements MouseListener, MouseMotionListener, ActionListener{
     /*
      *  Class Variables
      */
-    private int numTiles = 25;
+    private int numTiles = 50;
     private double cellSize;
     private int screenSize;
     private int offset = 0;
@@ -32,22 +32,27 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
     private InfoPanel panel;
     private long cycles = 0;
     private int goal = 1000;
-     /*
-     * The menu that pops up when you right click on the grid.
-     */
-    private JPopupMenu menu;
-    private JMenu add = new JMenu("Add");
-    private JMenuItem addPrey = new JMenuItem("Prey");
-    private JMenuItem addPred = new JMenuItem("Predator");
-    private JMenuItem remove = new JMenuItem("Remove");
 
     private boolean GRID_LINES = true;
     private boolean CIRCLES = false;
+    private int PAINT_MODE = 0;
 
-
+    public void setPaintMode(int mode)
+    {
+	PAINT_MODE = mode;
+	if (PAINT_MODE == 0)
+	    System.out.println("Paint mode disabled!");
+	else if (PAINT_MODE == 1)
+	    System.out.println("Paint mode set to prey!");
+	else if (PAINT_MODE == 2)
+	    System.out.println("Paint mode set to predators!");
+	setFocusable(true);
+    }  
+    
     public Grid(int screenSize, InfoPanel d)
     {
         addMouseListener(this);
+	addMouseMotionListener(this);
         gameGrid = new GameSquare[numTiles][numTiles];
         for (int i = 0; i < numTiles; i++)
         {
@@ -62,13 +67,8 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
         cellSize = screenSize / numTiles;
         panel = d;
 
-        menu = new JPopupMenu();
-        // Add entity to grid
-        addPrey.addActionListener(this);
-        addPred.addActionListener(this);
-        // Remove entity from grid
-        remove.addActionListener(this);
         InfoPanel.setDelay(numTiles);
+	setFocusable(true);
 
     }
 
@@ -496,70 +496,44 @@ public class Grid extends JPanel implements MouseListener, ActionListener {
     public void mouseReleased(MouseEvent e) {}
     public void mousePressed(MouseEvent e) 
     {
-        int row = (int)(((double)e.getY())/getHeight()*numTiles);
-        int col = (int)(((double)e.getX())/getWidth()*numTiles);
-        if (SwingUtilities.isRightMouseButton(e))
+	if (PAINT_MODE > 0)
+	    mouseDragged(e);
+        if (SwingUtilities.isLeftMouseButton(e))
         {
-            if (gameGrid[row][col].isEmpty())
-            {
-                menu.remove(remove);
-                menu.add(add);
-                add.add(addPrey);
-                add.add(addPred);
-            }
-            else
-            {
-                menu.remove(add);
-                add.remove(addPrey);
-                add.remove(addPred);
-                menu.add(remove);
-                
-            }
-            clickedRow = row;
-            clickedCol = col;
-            menu.show(e.getComponent(),e.getX(),e.getY());
-        }
-        else if (SwingUtilities.isLeftMouseButton(e))
-        {
-            
-            // Moving / Selection
-            //if (selected == null && !gameGrid[row][col].isEmpty())
-            //{
-                //selected = gameGrid[row][col];
-              //  System.out.println(selected.entity.toString());
-            //}
-            //else if (selected == gameGrid[row][col])
-            //{
-              //  System.out.println("Same object, unselecting.");
-                //selected = null;
-            //}
-            /*else if (selected != null)
-            {
-                ArrayList<Location> vacants = getVacantNeighbors(selected);
-                for (Location l : vacants)
-                {
-                    System.out.println(l);
-                }
-                if (!vacants.contains(new Location(row,col))) // Invalid Move
-                {
-                    System.out.println("Invalid move");
-                    return;
-                }
-
-                move(selected, row, col);
-                selected = null;
-
-                repaint();
-                String s = "Moved to (" + row + "," + col + ")";
-                System.out.println(s);
-            }*/
-
-             // Set the info panel labels
+            int row = (int)(((double)e.getY())/getHeight()*numTiles);
+            int col = (int)(((double)e.getX())/getWidth()*numTiles);
+            // Set the info panel labels
             if (!gameGrid[row][col].isEmpty())
                 panel.displayInfo(gameGrid[row][col]);
 
         }
     }
+
+    // Motion Listener
+    @Override
+    public void mouseDragged(MouseEvent e)
+    {
+	if (PAINT_MODE == 0)
+	    return;
+        int row = (int)(((double)e.getY())/getHeight()*numTiles);
+        int col = (int)(((double)e.getX())/getWidth()*numTiles);
+	try
+	{
+		if (gameGrid[row][col].isEmpty())
+		{
+		    if (PAINT_MODE == 1)
+			gameGrid[row][col].setCharacter(new Prey());
+		    else if (PAINT_MODE == 2)
+			gameGrid[row][col].setCharacter(new Predator());
+		    gameGrid[row][col].setLocation(new Location(row,col));
+		    gameGrid[row][col].setOccupied(true);
+		    repaint();
+		}
+	} catch(Exception ArrayIndexOutOfBoundsException) {}
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e){}
 
     // Move selected -> row & col
     public void move(GameSquare selected, int row, int col)
