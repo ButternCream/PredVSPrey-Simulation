@@ -43,6 +43,7 @@ public class Main extends JFrame
     private JCheckBoxMenuItem paintPredator;
 
     private Integer[] goals = new Integer[]{5000, 10000, 25000, 50000, 100000, 250000};
+    private JCheckBoxMenuItem simulationMode;
     // New game menu
     private JFrame newGame;
     
@@ -131,6 +132,7 @@ public class Main extends JFrame
 
 	paintPrey.setState(false);
 	paintPredator.setState(false);
+
 
         musicItem.setState(false);
         circItems.setState(false);
@@ -342,7 +344,7 @@ public class Main extends JFrame
     {
          //Create elements for popup menu
         newGame = new JFrame("New Game");
-        newGame.setSize(new Dimension(250,200));
+        newGame.setSize(new Dimension(300,250));
         JButton create = new JButton("Create");
         JButton cancel = new JButton("Cancel");
         JFormattedTextField size = new JFormattedTextField();
@@ -360,6 +362,7 @@ public class Main extends JFrame
         JLabel goalLbl = new JLabel("Win Goal: ");
         JComboBox<Integer> diff = new JComboBox<>(goals);
         diff.setSelectedIndex(0);
+        JCheckBoxMenuItem simMode = new JCheckBoxMenuItem("Simulation Mode");
 
         create.addActionListener(new ActionListener(){
             @Override
@@ -368,9 +371,12 @@ public class Main extends JFrame
                 g.resize(((Number)size.getValue()).intValue());
                 int numPred = ((Number)predator.getValue()).intValue();
                 int numPrey = ((Number)prey.getValue()).intValue();
-                g.shuffle();
                 g.generatePositions(numPred,numPrey);
-                g.setGoal((Integer)diff.getSelectedItem());
+                if (simMode.getState())
+                    g.setGoal(0);
+                else
+                    g.setGoal((Integer)diff.getSelectedItem());
+                g.shuffle();
                 newGame.setVisible(false);
                 panel.Enable();
                 panel.setCycle(0);
@@ -435,16 +441,22 @@ public class Main extends JFrame
         c.gridx = 1;
         c.gridy = 3;
         newGame.add(diff, c);
+        
+        c.weightx = 0.5;        
+        c.gridx = 0;
+        c.gridy = 4;
+        newGame.add(simMode, c);
 
         c.weighty = 0.5;
         c.gridx = 0;
-        c.gridy = 4;
+        c.gridy = 5;
         newGame.add(create, c);
 
         c.weightx = 0.5;        
         c.gridx = 1;
-        c.gridy = 4;
+        c.gridy = 5;
         newGame.add(cancel, c);
+        
     }
 
     // Main

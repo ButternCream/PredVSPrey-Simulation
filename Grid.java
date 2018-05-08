@@ -82,7 +82,8 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
     public void setGoal(int goal)
     {
         this.goal = goal;
-        panel.displayGoal(goal);
+        if (goal > 0)
+            panel.displayGoal(goal);
     }
 
     public int getGoal()
@@ -195,8 +196,13 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
         panel.setCycle(++cycles);
 
         repaint();
+        if (checkEndGame() == 0)
+        {
+            panel.setStatus("<html>Simulation Mode</html>");
+            return;
+        }
         //Check for end game
-        if(checkEndGame() < 0)
+        else if (checkEndGame() < 0)
         {
             panel.setStatus("<html>Game over, you lose!</html>");
             panel.Disable();
@@ -257,7 +263,11 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
     // Check to see if the game is over
     public int checkEndGame()
     {
-        if (cycles == goal)
+        if (cycles == 0)
+        {
+            return 0;
+        }
+        else if (cycles == goal)
         {
             return 1;
         }
@@ -452,37 +462,45 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
     protected void paintComponent(Graphics g)
     {
         super.paintComponent(g);
-        g.setColor(Color.LIGHT_GRAY);
-        g.fillRect(0,0,getWidth(),getHeight());
+        Graphics2D g2 = (Graphics2D)g;
+        g2.setColor(Color.LIGHT_GRAY);
+        g2.fillRect(0,0,getWidth(),getHeight());
         int row, col;
         double cellWidth = (double)getWidth() / numTiles;
         double cellHeight = (double)getHeight() / numTiles;
         for (row = 0; row < numTiles; row++) {
             for (col = 0; col < numTiles; col++) {
                 if (!gameGrid[row][col].isEmpty()) {
+                    int centerX = (int)(((col+1)*cellWidth) - cellWidth/2);
+                    int centerY = (int)(((row+1)*cellHeight) - cellHeight/2);
                     int x1 = (int)(col*cellWidth);
                     int y1 = (int)(row*cellHeight);
                     int x2 = (int)((col+1)*cellWidth);
                     int y2 = (int)((row+1)*cellHeight);
-                    g.setColor(gameGrid[row][col].getColor());
+                    g2.setColor(gameGrid[row][col].getColor());
+                    
                     if (CIRCLES)
-                        g.fillOval( x1, y1, (int)cellWidth, (int)cellHeight );
+                        g2.fillOval( x1, y1, (int)cellWidth, (int)cellHeight );
                     else
-                        g.fillRect( x1, y1, x2-x1, y2-y1 );
+                    {
+                        //g2.fillRect( x1, y1, x2-x1, y2-y1 );
+                        new Square((int)cellWidth, centerX, centerY, gameGrid[row][col].getColor()).paintComponent(g2);
+                    }
                 }
             }
         }
         if (GRID_LINES){
-           g.setColor(Color.BLACK);
+           g2.setColor(Color.BLACK);
             for (row = 1; row < numTiles; row++) {
                 int y = (int)(row*cellHeight);
-                g.drawLine(0,y,getWidth(),y);
+                g2.drawLine(0,y,getWidth(),y);
             }
             for (col = 1; col < numTiles; col++) {
                 int x = (int)(col*cellWidth);
-                g.drawLine(x,0,x,getHeight());
+                g2.drawLine(x,0,x,getHeight());
             } 
         }
+
             
         
     }
