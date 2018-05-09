@@ -26,6 +26,13 @@ public class InfoPanel extends JPanel
     private boolean running = false;
     private static int delay;
 
+    @Override
+    public void paintComponent(Graphics g)
+    {
+	super.paintComponent(g);
+	Graphics2D g2 = (Graphics2D)g;
+    }
+
     /*
      * Construct a panel based on a parent window size modification
      */
@@ -223,6 +230,7 @@ public class InfoPanel extends JPanel
 	    paintInfo.setText("Paint Mode: Prey");
 	else if (mode == 2)
 	    paintInfo.setText("Paint Mode: Predator");
+	repaint();
     }
 
 }

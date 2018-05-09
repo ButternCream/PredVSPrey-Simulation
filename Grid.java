@@ -37,6 +37,8 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
     private boolean CIRCLES = false;
     private int PAINT_MODE = 0;
 
+    private Cursor paint;
+
     public void setPaintMode(int mode)
     {
 	PAINT_MODE = mode;
@@ -68,6 +70,7 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
         this.screenSize = screenSize;
         cellSize = screenSize / numTiles;
         panel = d;
+
 
         InfoPanel.setDelay(numTiles);
 	setFocusable(true);
@@ -560,7 +563,23 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
     }
 
     @Override
-    public void mouseMoved(MouseEvent e){}
+    public void mouseMoved(MouseEvent e)
+    {
+	    if (PAINT_MODE > 0)
+	    {
+		setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
+					new ImageIcon("paint.png").getImage(),
+					new Point(0,0),
+					"custom"
+					));
+	    }
+	    else
+	    {
+		setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	    }
+    }
+
+
 
     // Move selected -> row & col
     public void move(GameSquare selected, int row, int col)

@@ -126,7 +126,7 @@ public class Main extends JFrame
         musicItem = new JCheckBoxMenuItem("Music");
         circItems = new JCheckBoxMenuItem("Use Circles");
         gridLinesItem = new JCheckBoxMenuItem("Show Grid Lines");
-    	paintMode = new JMenu("Paint Mode");
+    	paintMode = new JMenu("Paint");
     	paintPrey = new JCheckBoxMenuItem("Prey");
     	paintPredator = new JCheckBoxMenuItem("Predator");
 
@@ -200,10 +200,9 @@ public class Main extends JFrame
         options.add(musicItem);
         options.add(circItems);
         options.add(gridLinesItem);
-	options.add(paintMode);
         menuBar.add(options);
+	menuBar.add(paintMode);
     }
-
 
     /*
      * Event handler for when File -> New is clicked
