@@ -45,22 +45,22 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
 
     public void setPaintMode(int mode)
     {
-	PAINT_MODE = mode;
-	if (PAINT_MODE == 0)
-	    System.out.println("Paint mode disabled!");
-	else if (PAINT_MODE == 1)
-	    System.out.println("Paint mode set to prey!");
-	else if (PAINT_MODE == 2)
-	    System.out.println("Paint mode set to predators!");
-	setFocusable(true);
+        PAINT_MODE = mode;
+        if (PAINT_MODE == 0)
+            System.out.println("Paint mode disabled!");
+        else if (PAINT_MODE == 1)
+            System.out.println("Paint mode set to prey!");
+        else if (PAINT_MODE == 2)
+            System.out.println("Paint mode set to predators!");
+        setFocusable(true);
     }  
 
     public int getPaintMode() { return PAINT_MODE; }
-    
+
     public Grid(int screenSize, InfoPanel d)
     {
         addMouseListener(this);
-	addMouseMotionListener(this);
+        addMouseMotionListener(this);
         gameGrid = new GameSquare[numTiles][numTiles];
         for (int i = 0; i < numTiles; i++)
         {
@@ -77,7 +77,7 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
 
 
         InfoPanel.setDelay(numTiles);
-	setFocusable(true);
+        setFocusable(true);
 
     }
 
@@ -203,25 +203,26 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
         panel.setCycle(++cycles);
 
         repaint();
-        if (checkEndGame() == 0)
+        int end = checkEndGame();
+        if (end == 0)
         {
             panel.setStatus("<html>Simulation Mode</html>");
-            return;
+        }
+        else if (end == 2)
+        {
+            panel.setStatus("<html>Simulation ended");
+            panel.Disable();
         }
         //Check for end game
-        else if (checkEndGame() < 0)
+        else if (end < 0)
         {
             panel.setStatus("<html>Game over, you lose!</html>");
             panel.Disable();
-            cycles = 0;
-            return;
         }
-        else if (checkEndGame() > 0)
+        else if (end > 0)
         {
             panel.setStatus("<html>Congratulations, you survived!</html>");
             panel.Disable();
-            cycles = 0;
-            return;
         }
     }
 
@@ -270,11 +271,7 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
     // Check to see if the game is over
     public int checkEndGame()
     {
-        if (cycles == 0)
-        {
-            return 0;
-        }
-        else if (cycles == goal)
+        if (cycles == goal)
         {
             return 1;
         }
@@ -284,7 +281,9 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
         {
             for (GameSquare sq : sqlist)
             {
-                if (sq.getType().equals("Prey") || sq.getType().equals("Mutated Prey"))
+                if (sq.isEmpty())
+                    continue;
+                else if (sq.getType().equals("Prey") || sq.getType().equals("Mutated Prey"))
                     cPrey++;
                 else if (sq.getType().equals("Predator") || sq.getType().equals("Mutated Predator"))
                     cPred++;
@@ -292,7 +291,8 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
                     return 0; // No winner yet
             }
         }
-	if (cPrey == 0 && cPred == 0) { return 2; }
+        if (cPrey == 0 && cPred == 0) { return 2; }
+        if (goal == 0){ return 0;}
         return -1; // Predators won
     }
 
@@ -303,7 +303,7 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
             for (GameSquare sq : sqlist)
                 sq.entity.setMoved(false);
     }
-    
+
     // Try and reproduce
     public void reproduce()
     {
@@ -436,7 +436,7 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
             }
         }
     }
-    
+
     // unmutated prey randomly move
     public void randomPreyMoves()
     {
@@ -485,7 +485,7 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
                     int x2 = (int)((col+1)*cellWidth);
                     int y2 = (int)((row+1)*cellHeight);
                     g2.setColor(gameGrid[row][col].getColor());
-                    
+
                     if (CIRCLES)
                         g2.fillOval( x1, y1, (int)cellWidth, (int)cellHeight );
                     else
@@ -497,7 +497,7 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
             }
         }
         if (GRID_LINES){
-           g2.setColor(Color.BLACK);
+            g2.setColor(Color.BLACK);
             for (row = 1; row < numTiles; row++) {
                 int y = (int)(row*cellHeight);
                 g2.drawLine(0,y,getWidth(),y);
@@ -508,8 +508,8 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
             } 
         }
 
-            
-        
+
+
     }
 
     /*
@@ -524,8 +524,8 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
     public void mouseReleased(MouseEvent e) {}
     public void mousePressed(MouseEvent e) 
     {
-	if (PAINT_MODE > 0)
-	    mouseDragged(e);
+        if (PAINT_MODE > 0)
+            mouseDragged(e);
         if (SwingUtilities.isRightMouseButton(e))
         {
             int row = (int)(((double)e.getY())/getHeight()*numTiles);
@@ -541,46 +541,46 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
     @Override
     public void mouseDragged(MouseEvent e)
     {
-	if (PAINT_MODE == 0 || SwingUtilities.isRightMouseButton(e))
-	    return;
+        if (PAINT_MODE == 0 || SwingUtilities.isRightMouseButton(e))
+            return;
         int row = (int)(((double)e.getY())/getHeight()*numTiles);
         int col = (int)(((double)e.getX())/getWidth()*numTiles);
-	try
-	{
-		for (int r = -1; r <= 1; r++)
-		{
-		    for (int c = -1; c <= 1; c++)
-		    {
-			if (gameGrid[row+r][col+c].isEmpty())
-			{
-			    if (PAINT_MODE == 1)
-				gameGrid[row+r][col+c].setCharacter(new Prey());
-			    else if (PAINT_MODE == 2)
-				gameGrid[row+r][col+c].setCharacter(new Predator());
-			    gameGrid[row+r][col+c].setLocation(new Location(row+r,col+c));
-			    gameGrid[row+r][col+c].setOccupied(true);
-			    repaint();
-			}
-		    }
-		}
-	} catch(Exception ArrayIndexOutOfBoundsException) {}
+        try
+        {
+            for (int r = -1; r <= 1; r++)
+            {
+                for (int c = -1; c <= 1; c++)
+                {
+                    if (gameGrid[row+r][col+c].isEmpty())
+                    {
+                        if (PAINT_MODE == 1)
+                            gameGrid[row+r][col+c].setCharacter(new Prey());
+                        else if (PAINT_MODE == 2)
+                            gameGrid[row+r][col+c].setCharacter(new Predator());
+                        gameGrid[row+r][col+c].setLocation(new Location(row+r,col+c));
+                        gameGrid[row+r][col+c].setOccupied(true);
+                        repaint();
+                    }
+                }
+            }
+        } catch(Exception ArrayIndexOutOfBoundsException) {}
     }
 
     @Override
     public void mouseMoved(MouseEvent e)
     {
-	    if (PAINT_MODE > 0)
-	    {
-		setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
-					new ImageIcon("paint.png").getImage(),
-					new Point(0,0),
-					"custom"
-					));
-	    }
-	    else
-	    {
-		setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-	    }
+        if (PAINT_MODE > 0)
+        {
+            setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
+                        new ImageIcon("paint.png").getImage(),
+                        new Point(0,0),
+                        "custom"
+                        ));
+        }
+        else
+        {
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        }
     }
 
 
@@ -616,7 +616,7 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
             }
         }
         return vacant;
-   }
+    }
 
     public ArrayList<Location> findPrey(GameSquare sq)
     {
@@ -637,7 +637,7 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
             }
         }
         return prey;
-   }
+    }
 
     public boolean isValid(int row, int col)
     {
@@ -662,4 +662,4 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
     }
 
     public void setLoadedCycles(long c) { cycles = c; }
- }       
+}       

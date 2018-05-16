@@ -71,7 +71,7 @@ public class InfoPanel extends JPanel
                         {
                             Main.getGridInstance().eventNextCycle();
                             try{
-                                Thread.sleep(delay);
+                                Thread.sleep(2000);
                             } catch(Exception e){}
                         }
                     }

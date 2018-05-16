@@ -25,7 +25,7 @@ public class Main extends JFrame
      */
     private InfoPanel panel;
     private JButton ok;
-    private int screenSize = 1000;
+    private int screenSize = 950;
     private static Grid g;
 
     // Menu related variables
@@ -436,13 +436,13 @@ public class Main extends JFrame
         JButton create = new JButton("Create");
         JButton cancel = new JButton("Cancel");
         JFormattedTextField size = new JFormattedTextField();
-        size.setValue(new Integer(25));
+        size.setValue(new Integer(100));
         size.setColumns(5);
         JFormattedTextField prey = new JFormattedTextField();
-        prey.setValue(new Integer(50));
+        prey.setValue(new Integer(5000));
         prey.setColumns(5);
         JFormattedTextField predator = new JFormattedTextField();
-        predator.setValue(new Integer(50));
+        predator.setValue(new Integer(500));
         predator.setColumns(5);
         JLabel sizeLbl = new JLabel("Grid Size: ");
         JLabel predLbl = new JLabel("# Of Predators: ");
@@ -456,7 +456,9 @@ public class Main extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                g.resize(((Number)size.getValue()).intValue());
+                int temp_size = ((Number)size.getValue()).intValue();
+                g.resize(temp_size);
+                if (temp_size >= 300) { g.useGridLines(false); }
                 int numPred = ((Number)predator.getValue()).intValue();
                 int numPrey = ((Number)prey.getValue()).intValue();
                 g.generatePositions(numPred,numPrey);
