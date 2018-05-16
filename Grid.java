@@ -36,8 +36,12 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
     private boolean GRID_LINES = true;
     private boolean CIRCLES = false;
     private int PAINT_MODE = 0;
+    private double CONVERSION_RATE = 0.001;
 
     private Cursor paint;
+
+    public void setConversionRate(double rate) { CONVERSION_RATE = rate; }
+    public double getConversionRate() { return CONVERSION_RATE; }
 
     public void setPaintMode(int mode)
     {
@@ -254,7 +258,7 @@ public class Grid extends JPanel implements MouseListener, MouseMotionListener, 
                 }
                 else if (!sq.isEmpty() && (sq.getType().equals("Prey") || sq.getType().equals("Mutated Prey")) && sq.entity.getAge() >= 100)
                 {
-                    if (r.nextDouble() < 0.001)
+                    if (r.nextDouble() < CONVERSION_RATE)
                         sq.setCharacter(new Predator());
                     else
                         sq.setOccupied(false);

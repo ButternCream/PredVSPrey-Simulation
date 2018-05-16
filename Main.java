@@ -16,6 +16,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 import sun.audio.*;
+import java.text.*;
 
 public class Main extends JFrame
 {
@@ -46,6 +47,10 @@ public class Main extends JFrame
     private JCheckBoxMenuItem simulationMode;
     // New game menu
     private JFrame newGame;
+
+    // Mutation options
+    private JMenuItem mutationMenu;
+    private JFrame mutateFrame;
     
   
     public Main()
@@ -68,6 +73,7 @@ public class Main extends JFrame
         createMenu();
         createOptionsMenu();
         createNewGameMenu();
+        createMutateMenu();
 
         this.setJMenuBar(menuBar);
         // Set visibility
@@ -129,6 +135,7 @@ public class Main extends JFrame
     	paintMode = new JMenu("Paint");
     	paintPrey = new JCheckBoxMenuItem("Prey");
     	paintPredator = new JCheckBoxMenuItem("Predator");
+        mutationMenu = new JMenuItem("Conversion Rate");
 
 	paintPrey.setState(false);
 	paintPredator.setState(false);
@@ -138,6 +145,13 @@ public class Main extends JFrame
         circItems.setState(false);
         gridLinesItem.setState(true);
 
+        mutationMenu.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent evt)
+            {
+                openMutateMenu();
+            }
+        });
 
 	paintPrey.addActionListener(new ActionListener(){
 	    @Override
@@ -200,6 +214,7 @@ public class Main extends JFrame
         options.add(musicItem);
         options.add(circItems);
         options.add(gridLinesItem);
+        options.add(mutationMenu);
         menuBar.add(options);
 	menuBar.add(paintMode);
     }
@@ -212,6 +227,16 @@ public class Main extends JFrame
         newGame.setLocationRelativeTo(null);
         newGame.setVisible(true);
         panel.setCycle(0);
+    }
+
+    /*
+     * Event handler for Options -> Mutation Rate
+     */
+    private void openMutateMenu()
+    {
+        createMutateMenu();
+        mutateFrame.setLocationRelativeTo(null);
+        mutateFrame.setVisible(true);
     }
 
     /*
@@ -339,6 +364,70 @@ public class Main extends JFrame
            
     }
 
+    private void createMutateMenu()
+    {
+        mutateFrame = new JFrame("Conversion Rate");
+        mutateFrame.setSize(new Dimension(225,80));
+        JLabel rateLabel = new JLabel("Rate (%):");
+        JButton set = new JButton("Set");
+        JButton cancel = new JButton("Cancel");
+
+        NumberFormat format = DecimalFormat.getInstance();
+        format.setMinimumFractionDigits(0);
+        format.setMaximumFractionDigits(5);
+
+        JFormattedTextField r = new JFormattedTextField(format);
+        r.setValue(new Double(g.getConversionRate())*100);
+        r.setToolTipText("<html>This is the conversion rate for prey converting to predators when they die.<br>The default is 0.1%, so when prey die there is a 0.1% chance of them turning into a predator</html>");
+        r.setColumns(5);
+
+        set.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent evt)
+            {
+                double rate = ((Number)r.getValue()).doubleValue();
+                g.setConversionRate(rate/100);
+                mutateFrame.setVisible(false);
+                System.out.println("Set conversion rate to " + rate);
+            }
+        });
+
+        cancel.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent evt)
+            {
+                mutateFrame.setVisible(false);
+            }
+        });
+
+        mutateFrame.setResizable(false);
+        mutateFrame.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        // Add the elements
+        c.ipadx = 5;
+        c.ipady = 5;
+
+        c.gridx = 0;
+        c.gridy = 0;
+        mutateFrame.add(rateLabel, c);
+
+        c.weightx = 0.5;        
+        c.gridx = 1;
+        c.gridy = 0;
+        mutateFrame.add(r, c);
+        
+        c.weighty = 0.5;
+        c.gridx = 0;
+        c.gridy = 5;
+        mutateFrame.add(set, c);
+
+        c.weightx = 0.5;        
+        c.gridx = 1;
+        c.gridy = 5;
+        mutateFrame.add(cancel, c);
+    }
+
     private void createNewGameMenu()
     {
          //Create elements for popup menu
@@ -388,7 +477,6 @@ public class Main extends JFrame
             public void actionPerformed(ActionEvent e)
             {
                 newGame.setVisible(false);
-                System.out.println("Canceled creating new game.");
             }
         });
 
