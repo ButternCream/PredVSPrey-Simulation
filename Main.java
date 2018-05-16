@@ -56,6 +56,7 @@ public class Main extends JFrame
     public Main()
     {
         super("Predator vs Prey");
+
         // Add elements
         panel = new InfoPanel(screenSize);
         g = new Grid(screenSize, panel);

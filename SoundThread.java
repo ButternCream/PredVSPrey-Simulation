@@ -5,6 +5,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
+import java.net.URL;
 
 public class SoundThread extends Thread {
 
@@ -28,7 +29,7 @@ public class SoundThread extends Thread {
     public void run() {
         Clip clip = null;
         try {
-            InputStream in = SoundThread.class.getClassLoader().getResourceAsStream(resource);
+            URL in = getClass().getResource(resource);
             if(in != null) {
                 AudioInputStream stream = AudioSystem.getAudioInputStream(in);
                 AudioFormat format = stream.getFormat();
@@ -47,6 +48,7 @@ public class SoundThread extends Thread {
             }
         } catch (Exception e) {
             e.printStackTrace(System.out);
+            System.out.println("Caught exception");
         } finally {
             try {
                 if(clip != null) {
@@ -54,6 +56,7 @@ public class SoundThread extends Thread {
                 }
             } catch(Exception x) {
                 x.printStackTrace(System.out);
+            System.out.println("Caught exception in finally");
             }
         }
     }
